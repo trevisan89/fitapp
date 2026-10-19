@@ -1,0 +1,20 @@
+{
+  "name": "FitApp — Treinos",
+  "short_name": "FitApp",
+  "description": "Execução dos treinos prescritos pelo seu Personal Trainer.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#4f46e5",
+  "lang": "pt",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
