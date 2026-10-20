@@ -26,6 +26,9 @@ export type Database = {
           slug: string;
           logo_url: string | null;
           cor_primaria: string | null;
+          stripe_customer_id: string | null;
+          stripe_subscription_id: string | null;
+          plano_status: string;
           created_at: string;
         };
         Insert: {
@@ -35,6 +38,9 @@ export type Database = {
           slug: string;
           logo_url?: string | null;
           cor_primaria?: string | null;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          plano_status?: string;
           created_at?: string;
         };
         Update: {
@@ -44,6 +50,9 @@ export type Database = {
           slug?: string;
           logo_url?: string | null;
           cor_primaria?: string | null;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          plano_status?: string;
           created_at?: string;
         };
         // FK de profiles.id -> auth.users(id) fica fora do schema public

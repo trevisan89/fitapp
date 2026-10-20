@@ -12,8 +12,12 @@ import { getStripe } from "@/lib/stripe";
  * exportar `runtime`/`dynamic` no segmento.
  */
 
-/** Preço placeholder do plano Pro — substituir pelo Price ID real do Stripe. */
-const PRECO_PLANO_PRO = "price_XYZ";
+/**
+ * Price ID real do plano Pro — definir no `.env.local`:
+ * Stripe > Dashboard > Products > [produto do Pro] > Pricing
+ * e copiar o "Price ID" (formato `price_...`). Ver `.env.local.example`.
+ */
+const PRECO_PLANO_PRO = process.env.STRIPE_PRICE_ID;
 
 /** URL pública da app, sem barra final (fallback: dev server). */
 function appUrl(): string {
@@ -31,6 +35,17 @@ export async function POST() {
     return NextResponse.json({ error: "Não autenticado." }, { status: 401 });
   }
   const user = data.user;
+
+  // Pagamentos ainda não configurados (STRIPE_PRICE_ID em falta no .env.local).
+  if (!PRECO_PLANO_PRO) {
+    console.error(
+      "[stripe] STRIPE_PRICE_ID em falta no .env.local — ver comentário em src/app/api/checkout/route.ts."
+    );
+    return NextResponse.json(
+      { error: "Pagamentos ainda não estão configurados." },
+      { status: 503 }
+    );
+  }
 
   // 2) Sessão de Checkout (mode: subscription).
   try {

@@ -5,11 +5,13 @@ import type { Database } from "@/types/database.types";
 /**
  * Cliente Supabase autenticado com a SERVICE ROLE KEY (bypass do RLS).
  *
- * Uso restrito às Server Actions do WebApp do aluno
- * (`src/app/actions/execucao.ts`): essa rota corre SEM sessão e as
- * políticas RLS são `to authenticated` — o papel `anon` com leitura por
- * `token_acesso` só chega numa migração futura. Até lá, a service role é
- * a via temporária autorizada.
+ * Usos atuais:
+ * - Server Actions do WebApp do aluno (`src/app/actions/execucao.ts`):
+ *   essa rota corre SEM sessão e as políticas RLS são `to authenticated`
+ *   — o papel `anon` com leitura por `token_acesso` só chega numa
+ *   migração futura. Até lá, a service role é a via temporária autorizada.
+ * - Webhook do Stripe (`src/app/api/webhook/route.ts`): os eventos chegam
+ *   sem sessão de utilizador e gravam o estado da assinatura em `profiles`.
  *
  * A chave vive apenas em `.env.local` e só é lida em ficheiros de
  * servidor — nunca chega ao browser (não é NEXT_PUBLIC_*).
