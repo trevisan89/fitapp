@@ -34,8 +34,8 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex h-16 items-center gap-2.5 border-b border-border px-5">
-        <span className="grid size-8 place-items-center rounded-lg bg-primary text-sm font-bold text-primary-foreground">
+      <div className="flex h-16 items-center gap-3 border-b border-border px-5">
+        <span className="grid size-9 place-items-center rounded-xl bg-gradient-primary text-sm font-bold text-primary-foreground shadow-lg shadow-primary/30">
           F
         </span>
         <span className="font-semibold tracking-tight">FitApp</span>
@@ -53,10 +53,10 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
               onClick={onNavigate}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 active:scale-[0.98]",
                 active
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  ? "bg-gradient-to-r from-primary/15 to-primary/5 text-primary ring-1 ring-inset ring-primary/20"
+                  : "text-muted-foreground hover:bg-accent/70 hover:text-accent-foreground"
               )}
             >
               <Icon className="size-4 shrink-0" />
@@ -118,7 +118,7 @@ export function DashboardShell({
           aria-label="Fechar menu"
           tabIndex={-1}
           onClick={() => setSidebarOpen(false)}
-          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
         />
       )}
 
@@ -126,7 +126,7 @@ export function DashboardShell({
       <aside
         inert={!sidebarOpen}
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-64 border-r border-border bg-card transition-transform duration-200 md:hidden",
+          "fixed inset-y-0 left-0 z-50 w-64 border-r border-border bg-card transition-transform duration-300 ease-out md:hidden",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
@@ -144,7 +144,7 @@ export function DashboardShell({
       </aside>
 
       <div className="md:pl-64">
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur-sm md:px-6">
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur-xl md:px-6">
           <button
             type="button"
             aria-label="Abrir menu"
@@ -156,7 +156,7 @@ export function DashboardShell({
           </button>
 
           <span className="flex items-center gap-2 font-semibold tracking-tight md:hidden">
-            <span className="grid size-7 place-items-center rounded-md bg-primary text-xs font-bold text-primary-foreground">
+            <span className="grid size-7 place-items-center rounded-lg bg-gradient-primary text-xs font-bold text-primary-foreground">
               F
             </span>
             FitApp

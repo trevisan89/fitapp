@@ -1,9 +1,20 @@
 import { z } from "zod";
 
 /**
+ * Id do aluno dono da ficha — validado como uuid ANTES de qualquer
+ * consulta; a Server Action `createFicha` ainda verifica a posse
+ * (`professional_id = auth.uid()`) antes de criar qualquer registo.
+ */
+export const alunoIdSchema = z.uuid({ message: "Aluno inválido." });
+
+/**
  * Payload relacional de uma ficha: `fichas_treino` → `treino_dias` →
  * `treino_itens`. Partilhado entre o montador (cliente) e a Server Action
  * `createFicha`, que volta a validar no servidor.
+ *
+ * Os limites de tamanho (dias e itens por dia) existem como guarda de
+ * esforço: a action insere linha a linha e um payload absurdamente
+ * grande não deve chegar a sequer tocar na base de dados.
  */
 export const itemFichaSchema = z.object({
   exercicioId: z.uuid({ message: "Exercício inválido." }),
@@ -29,7 +40,8 @@ export const diaFichaSchema = z.object({
   nome: z.string().trim().max(60, { message: "Nome do dia: máximo 60 caracteres." }),
   itens: z
     .array(itemFichaSchema)
-    .min(1, { message: "O dia precisa de pelo menos um exercício." }),
+    .min(1, { message: "O dia precisa de pelo menos um exercício." })
+    .max(60, { message: "Um dia pode ter no máximo 60 exercícios." }),
 });
 
 export const fichaPayloadSchema = z.object({
@@ -40,7 +52,8 @@ export const fichaPayloadSchema = z.object({
     .max(120, { message: "O título pode ter no máximo 120 caracteres." }),
   dias: z
     .array(diaFichaSchema)
-    .min(1, { message: "Adicione exercícios a pelo menos um dia de treino." }),
+    .min(1, { message: "Adicione exercícios a pelo menos um dia de treino." })
+    .max(10, { message: "Uma ficha pode ter no máximo 10 dias de treino." }),
 });
 
 export type ItemFichaInput = z.infer<typeof itemFichaSchema>;

@@ -3,7 +3,11 @@
 import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/lib/supabase/server";
-import { fichaPayloadSchema, type DiaFichaInput } from "@/lib/validators/ficha";
+import {
+  alunoIdSchema,
+  fichaPayloadSchema,
+  type DiaFichaInput,
+} from "@/lib/validators/ficha";
 
 /**
  * Cria uma ficha completa de forma relacional (sem transações simples via
@@ -26,6 +30,14 @@ export async function createFicha(
   titulo: string,
   dias: DiaFichaInput[]
 ): Promise<{ fichaId: string }> {
+  // O `alunoId` vem do cliente (URL da página) — validado como uuid antes
+  // de qualquer consulta, para nunca lançar um filtro malformado.
+  const alunoParseado = alunoIdSchema.safeParse(alunoId);
+
+  if (!alunoParseado.success) {
+    throw new Error("Aluno não encontrado.");
+  }
+
   const parsed = fichaPayloadSchema.safeParse({ titulo, dias });
 
   if (!parsed.success) {
@@ -47,7 +59,7 @@ export async function createFicha(
   const { data: aluno } = await supabase
     .from("alunos")
     .select("id")
-    .eq("id", alunoId)
+    .eq("id", alunoParseado.data)
     .eq("professional_id", user.id)
     .maybeSingle();
 
@@ -55,11 +67,37 @@ export async function createFicha(
     throw new Error("Aluno não encontrado.");
   }
 
+  // Os `exercicioId` vêm do cliente: só podem referenciar exercícios do
+  // próprio profissional ou do catálogo global. A FK não valida a posse
+  // (o RLS de treino_itens protege a escrita, mas não impede apontar para
+  // o catálogo alheio), por isso a verificação é explícita aqui.
+  const idsExercicios = [
+    ...new Set(
+      parsed.data.dias.flatMap((dia) => dia.itens.map((item) => item.exercicioId))
+    ),
+  ];
+
+  const { data: exerciciosPermitidos } = await supabase
+    .from("exercicios_catalogo")
+    .select("id")
+    .in("id", idsExercicios)
+    .or(`professional_id.eq.${user.id},professional_id.is.null`);
+
+  const conjuntoPermitidos = new Set(
+    (exerciciosPermitidos ?? []).map((exercicio) => exercicio.id)
+  );
+
+  if (idsExercicios.some((id) => !conjuntoPermitidos.has(id))) {
+    throw new Error(
+      "Um dos exercícios não existe na sua biblioteca. Atualize a página e tente novamente."
+    );
+  }
+
   // 1. Ficha
   const { data: ficha, error: erroFicha } = await supabase
     .from("fichas_treino")
     .insert({
-      aluno_id: alunoId,
+      aluno_id: alunoParseado.data,
       professional_id: user.id,
       titulo: parsed.data.titulo,
       ativa: false,

@@ -2,31 +2,37 @@
 @plugin "@tailwindcss/typography"; /* classes `prose` nas páginas legais */
 
 /*
+ * Dark mode refinado: os tokens alternam com a preferência do sistema e a
+ * variante `dark:` do Tailwind segue a mesma regra — sem JS, sem flash.
+ */
+@custom-variant dark (@media (prefers-color-scheme: dark));
+
+/*
  * Tokens de tema (padrão shadcn/ui em Tailwind v4) usados pela interface:
  *   bg-background, bg-card, bg-muted, text-muted-foreground, bg-primary,
  *   text-primary, border-border, ring-ring, bg-destructive...
- * Sem estes tokens, classes como `bg-primary` ou `text-muted-foreground`
- * não geram CSS.
+ * `--primary-end` completa o gradiente da marca (indigo → violeta).
  */
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #18181b;
   --card: #ffffff;
-  --card-foreground: #171717;
+  --card-foreground: #18181b;
   --popover: #ffffff;
-  --popover-foreground: #171717;
+  --popover-foreground: #18181b;
   --primary: #4f46e5;
+  --primary-end: #7c3aed;
   --primary-foreground: #ffffff;
-  --secondary: #f5f5f5;
-  --secondary-foreground: #171717;
-  --muted: #f5f5f5;
-  --muted-foreground: #737373;
-  --accent: #f5f5f5;
-  --accent-foreground: #171717;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #18181b;
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  --accent: #f4f4f5;
+  --accent-foreground: #18181b;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
-  --border: #e5e5e5;
-  --input: #e5e5e5;
+  --border: #e4e4e7;
+  --input: #e4e4e7;
   --ring: #4f46e5;
 }
 
@@ -38,6 +44,7 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
+  --color-primary-end: var(--primary-end);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -56,24 +63,26 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --card: #171717;
-    --card-foreground: #ededed;
-    --popover: #171717;
-    --popover-foreground: #ededed;
+    /* Fundo "quase preto" profundo (zinc-950) com cartões elevados. */
+    --background: #09090b;
+    --foreground: #f4f4f5;
+    --card: #111114;
+    --card-foreground: #f4f4f5;
+    --popover: #111114;
+    --popover-foreground: #f4f4f5;
     --primary: #6366f1;
+    --primary-end: #8b5cf6;
     --primary-foreground: #ffffff;
-    --secondary: #1f1f1f;
-    --secondary-foreground: #ededed;
-    --muted: #1f1f1f;
-    --muted-foreground: #a3a3a3;
-    --accent: #1f1f1f;
-    --accent-foreground: #ededed;
+    --secondary: #18181b;
+    --secondary-foreground: #f4f4f5;
+    --muted: #18181b;
+    --muted-foreground: #a1a1aa;
+    --accent: #1c1c22;
+    --accent-foreground: #f4f4f5;
     --destructive: #ef4444;
     --destructive-foreground: #ffffff;
-    --border: #2a2a2a;
-    --input: #2a2a2a;
+    --border: #23232b;
+    --input: #23232b;
     --ring: #6366f1;
   }
 }
@@ -82,4 +91,109 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans, ui-sans-serif), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Seleção de texto com a cor da marca. */
+::selection {
+  background: color-mix(in srgb, var(--primary) 30%, transparent);
+}
+
+/*
+ * Micro-animações da interface. Componentes usam o prefixo `motion-safe:`
+ * para respeitar `prefers-reduced-motion` automaticamente.
+ */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(110%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes check-pop {
+  0% {
+    transform: scale(0.4);
+  }
+  60% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes soft-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@utility animate-fade-in-up {
+  animation: fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@utility animate-scale-in {
+  animation: scale-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@utility animate-slide-up {
+  animation: slide-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@utility animate-check-pop {
+  animation: check-pop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@utility animate-soft-pulse {
+  animation: soft-pulse 2.4s ease-in-out infinite;
+}
+
+/*
+ * Gradiente da marca (indigo → violeta) e variação em texto — usados em
+ * botões primários, selos de progresso e títulos de destaque.
+ */
+@utility bg-gradient-primary {
+  background-image: linear-gradient(
+    135deg,
+    var(--primary) 0%,
+    var(--primary-end) 100%
+  );
+}
+
+@utility text-gradient-primary {
+  background-image: linear-gradient(
+    120deg,
+    var(--primary) 0%,
+    var(--primary-end) 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
 }

@@ -6,6 +6,7 @@ import { ShieldX, TimerOff } from "lucide-react";
 
 import { getTreinoAluno } from "@/app/actions/execucao";
 import { ExecucaoTreino } from "@/components/aluno/execucao-treino";
+import { getIniciais } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Meu Treino | FitApp",
@@ -62,14 +63,31 @@ async function ConteudoAluno({
   }
 
   return (
-    <main className="mx-auto min-h-dvh w-full max-w-lg bg-background pb-24">
-      <header className="border-b border-border bg-card px-4 py-5 shadow-sm">
-        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          {treino.ficha.titulo}
-        </p>
-        <h1 className="mt-1 text-xl font-semibold tracking-tight">
-          Bora treinar, {treino.aluno.nome}!
-        </h1>
+    <main className="mx-auto min-h-dvh w-full max-w-lg bg-background pb-28">
+      {/* Cabeçalho imersivo: glow da marca + saudação */}
+      <header className="relative overflow-hidden border-b border-border bg-gradient-to-b from-primary/20 via-primary/5 to-transparent px-4 pb-6 pt-8">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-20 left-1/2 size-56 -translate-x-1/2 rounded-full bg-primary-end/25 blur-3xl"
+        />
+
+        <div className="relative flex items-center gap-3.5">
+          <span
+            className="grid size-12 shrink-0 place-items-center rounded-2xl bg-gradient-primary text-base font-bold text-primary-foreground shadow-lg shadow-primary/30"
+            aria-hidden="true"
+          >
+            {getIniciais(treino.aluno.nome)}
+          </span>
+
+          <div className="min-w-0">
+            <span className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-card/70 px-2.5 py-1 text-[11px] font-medium uppercase tracking-wider text-muted-foreground ring-1 ring-inset ring-border backdrop-blur">
+              <span className="truncate">{treino.ficha.titulo}</span>
+            </span>
+            <h1 className="mt-1 truncate text-xl font-semibold tracking-tight">
+              Bora treinar, {treino.aluno.nome}! 💪
+            </h1>
+          </div>
+        </div>
       </header>
 
       <div className="px-4 py-5">
@@ -81,9 +99,9 @@ async function ConteudoAluno({
 
 function TelaCarregamento() {
   return (
-    <main className="flex min-h-dvh items-center justify-center bg-muted/40">
+    <main className="flex min-h-dvh items-center justify-center bg-background">
       <div
-        className="h-9 w-44 animate-pulse rounded-lg bg-muted"
+        className="h-9 w-44 animate-pulse rounded-xl bg-muted motion-safe:animate-soft-pulse"
         aria-label="A carregar o treino…"
       />
     </main>
@@ -106,12 +124,12 @@ function TelaCentralizada({
   );
 
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center bg-muted/40 px-6 text-center">
+    <main className="flex min-h-dvh flex-col items-center justify-center bg-background px-6 text-center">
       <span
         className={
           critica
-            ? "grid size-14 place-items-center rounded-2xl bg-destructive/10 text-destructive"
-            : "grid size-14 place-items-center rounded-2xl bg-primary/10 text-primary"
+            ? "grid size-14 place-items-center rounded-2xl bg-destructive/10 text-destructive ring-1 ring-inset ring-destructive/20"
+            : "grid size-14 place-items-center rounded-2xl bg-gradient-primary text-primary-foreground shadow-lg shadow-primary/25"
         }
         aria-hidden="true"
       >
