@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { ArrowRight, MessageCircle, UserPlus, Users } from "lucide-react";
 
 import { getAlunos } from "@/app/actions/alunos";
+import { AvisoErroAcesso } from "@/components/dashboard/aviso-erro";
 import { cn, getIniciais } from "@/lib/utils";
 import type { Tables } from "@/types/database.types";
 
@@ -89,6 +91,12 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
+      {/* Erro 403 (ex.: acesso negado à área administrativa) via ?erro=403 —
+          `useSearchParams` exige fronteira Suspense em cacheComponents. */}
+      <Suspense fallback={null}>
+        <AvisoErroAcesso />
+      </Suspense>
+
       {/* Cabeçalho com glow da marca ao fundo */}
       <header className="relative space-y-2 overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-sm">
         <div

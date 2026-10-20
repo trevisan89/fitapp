@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+import { ehAdminEmail } from "@/lib/admin";
 import type { Database } from "@/types/database.types";
 
 /**
@@ -54,15 +55,24 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // Guardas de sessão (só DEPOIS do getUser, para não atrasar o refresh):
-  //   * rotas do painel exigem sessão → /login;
+  //   * rotas do painel e /admin exigem sessão → /login;
+  //   * /admin com sessão mas e-mail não-admin → /dashboard?erro=403;
   //   * /login com sessão → /dashboard.
   // O WebApp do aluno (/aluno/[token]) e a landing são públicos.
   const caminho = request.nextUrl.pathname;
   const emPainel = caminho === "/dashboard" || caminho.startsWith("/dashboard/");
+  const emAdmin = caminho === "/admin" || caminho.startsWith("/admin/");
   const emLogin = caminho === "/login" || caminho.startsWith("/login/");
 
-  if (emPainel && !user) {
+  if ((emPainel || emAdmin) && !user) {
     return redirecionar(request, supabaseResponse, "/login");
+  }
+
+  // E-mail admin verificado já na borda (redirect HTTP nativo, antes de o
+  // streaming começar). A página `/admin` e a Server Action `updatePlanoManual`
+  // repetem a mesma checagem por defesa em profundidade (`src/lib/admin.ts`).
+  if (emAdmin && !ehAdminEmail(user?.email)) {
+    return redirecionar(request, supabaseResponse, "/dashboard", "?erro=403");
   }
 
   if (emLogin && user) {
@@ -80,11 +90,12 @@ export async function proxy(request: NextRequest) {
 function redirecionar(
   request: NextRequest,
   respostaComCookies: NextResponse,
-  caminho: string
+  caminho: string,
+  busca = ""
 ): NextResponse {
   const destino = request.nextUrl.clone();
   destino.pathname = caminho;
-  destino.search = "";
+  destino.search = busca;
 
   const resposta = NextResponse.redirect(destino);
 
