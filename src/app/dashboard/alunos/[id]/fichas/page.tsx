@@ -2,13 +2,20 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ClipboardList, MessageCircle, Plus } from "lucide-react";
 
+import { FichaAcoes } from "@/components/fichas/ficha-acoes";
 import { FichaToggleAtiva } from "@/components/fichas/ficha-toggle-ativa";
 import { LinkAcessoAluno } from "@/components/fichas/link-acesso-aluno";
 import { createClient } from "@/lib/supabase/server";
 import { getIniciais } from "@/lib/utils";
 import type { Tables } from "@/types/database.types";
 
-function FichaCard({ ficha }: { ficha: Tables<"fichas_treino"> }) {
+function FichaCard({
+  ficha,
+  alunoId,
+}: {
+  ficha: Tables<"fichas_treino">;
+  alunoId: string;
+}) {
   const criadaEm = new Date(ficha.created_at).toLocaleDateString("pt-PT", {
     day: "2-digit",
     month: "short",
@@ -30,6 +37,7 @@ function FichaCard({ ficha }: { ficha: Tables<"fichas_treino"> }) {
           <FichaToggleAtiva fichaId={ficha.id} ativa={ficha.ativa} />
         </div>
         <p className="mt-1 text-sm text-muted-foreground">Criada em {criadaEm}</p>
+        <FichaAcoes fichaId={ficha.id} alunoId={alunoId} />
       </div>
     </li>
   );
@@ -156,7 +164,7 @@ export default async function FichasAlunoPage({
       ) : (
         <ul className="grid gap-4 sm:grid-cols-2">
           {fichas.map((ficha) => (
-            <FichaCard key={ficha.id} ficha={ficha} />
+            <FichaCard key={ficha.id} ficha={ficha} alunoId={aluno.id} />
           ))}
         </ul>
       )}

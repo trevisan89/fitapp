@@ -104,6 +104,65 @@ const DIAS_INICIAIS: DiaTreino[] = [
  */
 const LETRAS_DIAS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 
+/**
+ * Shape serializável de um dia pré-preenchido (fluxo "Editar" via
+ * `?editar=<fichaId>` na página "nova") — convertido para o estado do
+ * montador com os nomes resolvidos no catálogo local.
+ */
+export type DiaPreCarregado = {
+  letra: string;
+  nome: string | null;
+  itens: Array<{
+    exercicioId: string;
+    series: number;
+    repeticoes: string | null;
+    cargaSugerida: string | null;
+    descansoSegundos: number | null;
+  }>;
+};
+
+/**
+ * Converte os dias carregados da base de dados para o estado do montador.
+ * Exercícios que já não existem no catálogo são ignorados; os nomes e
+ * grupos musculares vêm do catálogo passado ao builder.
+ */
+function converterDiasPreCarregados(
+  dias: DiaPreCarregado[],
+  catalogo: Tables<"exercicios_catalogo">[]
+): DiaTreino[] {
+  const catalogoPorId = new Map(
+    catalogo.map((exercicio) => [exercicio.id, exercicio])
+  );
+
+  return dias
+    .filter((dia) => dia.letra.trim().length > 0)
+    .map((dia) => ({
+      id: `dia-${dia.letra.trim().toLowerCase()}`,
+      letra: dia.letra.trim(),
+      nome:
+        dia.nome && dia.nome.length > 0 ? dia.nome : `Treino ${dia.letra.trim()}`,
+      itens: dia.itens.flatMap((item, indice) => {
+        const exercicio = catalogoPorId.get(item.exercicioId);
+        if (!exercicio) {
+          return [];
+        }
+        return [
+          {
+            id: crypto.randomUUID(),
+            exercicioId: item.exercicioId,
+            nome: exercicio.nome,
+            grupoMuscular: exercicio.grupo_muscular,
+            series: item.series,
+            repeticoes: item.repeticoes ?? "",
+            cargaSugerida: item.cargaSugerida ?? "",
+            descansoSegundos: item.descansoSegundos,
+            ordem: indice,
+          },
+        ];
+      }),
+    }));
+}
+
 const INPUT_CLASSES =
   "w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none transition placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/40";
 
@@ -653,14 +712,24 @@ function PainelParametros({
 export function WorkoutBuilder({
   alunoId,
   catalogoExercicios,
+  tituloInicial,
+  diasIniciais,
 }: {
   alunoId: string;
   catalogoExercicios: Tables<"exercicios_catalogo">[];
+  tituloInicial?: string;
+  diasIniciais?: DiaPreCarregado[];
 }) {
   const router = useRouter();
 
-  const [dias, setDias] = useState<DiaTreino[]>(DIAS_INICIAIS);
-  const [titulo, setTitulo] = useState("Ficha de treino");
+  // Com `diasIniciais` (fluxo "Editar"), o montador arranca com a ficha
+  // original convertida; sem eles, com os dias padrão A/B.
+  const [dias, setDias] = useState<DiaTreino[]>(() =>
+    diasIniciais && diasIniciais.length > 0
+      ? converterDiasPreCarregados(diasIniciais, catalogoExercicios)
+      : DIAS_INICIAIS
+  );
+  const [titulo, setTitulo] = useState(tituloInicial ?? "Ficha de treino");
   const [selecionadoId, setSelecionadoId] = useState<string | null>(null);
   const [arrasto, setArrasto] = useState<ItemArrasto | null>(null);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
