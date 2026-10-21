@@ -97,6 +97,13 @@ const DIAS_INICIAIS: DiaTreino[] = [
   { id: "dia-b", letra: "B", nome: "Treino B", itens: [] },
 ];
 
+/**
+ * Letras atribuídas automaticamente aos dias novos (C, D, E, F...) —
+ * limite alinhado com `fichaPayloadSchema` (máx. 10 dias por ficha,
+ * logo A–J).
+ */
+const LETRAS_DIAS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
+
 const INPUT_CLASSES =
   "w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none transition placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/40";
 
@@ -746,6 +753,33 @@ export function WorkoutBuilder({
     setSelecionadoId(null);
   }
 
+  /**
+   * Adiciona um dia vazio com a próxima letra livre (A–J, no máximo 10
+   * dias por ficha — alinhado com `fichaPayloadSchema`). Dias vazios são
+   * excluídos do payload no guardado, logo nunca bloqueiam o submeter.
+   */
+  function adicionarDia() {
+    setDias((estadoAtual) => {
+      if (estadoAtual.length >= LETRAS_DIAS.length) {
+        return estadoAtual;
+      }
+      const usadas = new Set(estadoAtual.map((dia) => dia.letra));
+      const proxima = LETRAS_DIAS.find((letra) => !usadas.has(letra));
+      if (!proxima) {
+        return estadoAtual;
+      }
+      return [
+        ...estadoAtual,
+        {
+          id: `dia-${proxima.toLowerCase()}`,
+          letra: proxima,
+          nome: `Treino ${proxima}`,
+          itens: [],
+        },
+      ];
+    });
+  }
+
   async function guardarFicha(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setFeedback(null);
@@ -866,9 +900,25 @@ export function WorkoutBuilder({
           <CatalogoLateral catalogo={catalogoExercicios} />
 
           <div className="space-y-3">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Dias de treino
-            </h2>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Dias de treino
+              </h2>
+              <button
+                type="button"
+                onClick={adicionarDia}
+                disabled={dias.length >= LETRAS_DIAS.length}
+                title={
+                  dias.length >= LETRAS_DIAS.length
+                    ? "Máximo de 10 dias de treino por ficha."
+                    : undefined
+                }
+                className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 py-1.5 text-xs font-medium transition hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Plus className="size-3.5" aria-hidden="true" />
+                Adicionar Dia de Treino
+              </button>
+            </div>
             <div className="grid gap-4 md:grid-cols-2">
               {dias.map((dia) => (
                 <ColunaDia

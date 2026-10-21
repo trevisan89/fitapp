@@ -5,9 +5,15 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import {
   alunoIdSchema,
+  fichaIdSchema,
   fichaPayloadSchema,
   type DiaFichaInput,
 } from "@/lib/validators/ficha";
+
+/** Resultado das Server Actions de estado — nunca lançam exceção. */
+export type ResultadoToggleFicha =
+  | { sucesso: true; ativa: boolean }
+  | { sucesso: false; erro: string };
 
 /**
  * Cria uma ficha completa de forma relacional (sem transações simples via
@@ -152,7 +158,110 @@ export async function createFicha(
   }
 
   // Rota dinâmica: invalida as fichas de qualquer aluno (padrão [id]).
-  revalidatePath("/dashboard/alunos/[id]/fichas");
+  revalidatePath("/dashboard/alunos/[id]/fichas", "page");
 
   return { fichaId: ficha.id };
+}
+
+/**
+ * Alterna o estado `ativa` de uma ficha (ativar/desativar).
+ *
+ * Regra de negócio: **no máximo UMA ficha ativa por aluno** — ao ativar,
+ * as outras fichas do mesmo aluno são desativadas primeiro, para que a
+ * ficha que o aluno vê em `/aluno/{token}` seja sempre a esperada.
+ *
+ * A posse é verificada em duas etapas (ficha → aluno do profissional em
+ * sessão), em defesa além da RLS `fichas_treino_acesso_profissional`.
+ *
+ * @param fichaId Id da ficha (uuid validado com `fichaIdSchema`).
+ * @returns `{ sucesso: true, ativa }` ou `{ sucesso: false, erro }`.
+ */
+export async function toggleFichaAtiva(
+  fichaId: string
+): Promise<ResultadoToggleFicha> {
+  const idParseado = fichaIdSchema.safeParse(fichaId);
+  if (!idParseado.success) {
+    return { sucesso: false, erro: "Ficha não encontrada." };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return {
+      sucesso: false,
+      erro: "Sessão inválida. Termine a sessão e volte a entrar.",
+    };
+  }
+
+  const { data: ficha, error: erroFicha } = await supabase
+    .from("fichas_treino")
+    .select("id, ativa, aluno_id")
+    .eq("id", idParseado.data)
+    .maybeSingle();
+
+  if (erroFicha) {
+    return {
+      sucesso: false,
+      erro: `Não foi possível ler a ficha: ${erroFicha.message}`,
+    };
+  }
+  // Mensagem genérica: não revelamos existência de fichas fora de posse.
+  if (!ficha) {
+    return { sucesso: false, erro: "Ficha não encontrada." };
+  }
+
+  const { data: aluno, error: erroAluno } = await supabase
+    .from("alunos")
+    .select("id")
+    .eq("id", ficha.aluno_id)
+    .eq("professional_id", user.id)
+    .maybeSingle();
+
+  if (erroAluno) {
+    return {
+      sucesso: false,
+      erro: `Não foi possível verificar a posse da ficha: ${erroAluno.message}`,
+    };
+  }
+  if (!aluno) {
+    return { sucesso: false, erro: "Ficha não encontrada." };
+  }
+
+  const novoEstado = !ficha.ativa;
+
+  // Ao ativar, desativa primeiro as outras fichas do mesmo aluno
+  // (garante uma única ficha ativa por aluno).
+  if (novoEstado) {
+    const { error: erroDesativar } = await supabase
+      .from("fichas_treino")
+      .update({ ativa: false })
+      .eq("aluno_id", ficha.aluno_id)
+      .neq("id", ficha.id);
+
+    if (erroDesativar) {
+      return {
+        sucesso: false,
+        erro: `Não foi possível desativar as outras fichas: ${erroDesativar.message}`,
+      };
+    }
+  }
+
+  const { error: erroUpdate } = await supabase
+    .from("fichas_treino")
+    .update({ ativa: novoEstado })
+    .eq("id", ficha.id);
+
+  if (erroUpdate) {
+    return {
+      sucesso: false,
+      erro: `Não foi possível atualizar a ficha: ${erroUpdate.message}`,
+    };
+  }
+
+  // Rota dinâmica: passar o tipo "page" é obrigatório para paths com
+  // segmentos dinâmicos (sem ele, o Next ignora a invalidação).
+  revalidatePath("/dashboard/alunos/[id]/fichas", "page");
+  return { sucesso: true, ativa: novoEstado };
 }

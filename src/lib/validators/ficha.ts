@@ -8,6 +8,12 @@ import { z } from "zod";
 export const alunoIdSchema = z.uuid({ message: "Aluno inválido." });
 
 /**
+ * Id da ficha nas Server Actions de estado (`toggleFichaAtiva`) —
+ * validado como uuid ANTES de qualquer consulta ou UPDATE.
+ */
+export const fichaIdSchema = z.uuid({ message: "Ficha inválida." });
+
+/**
  * Payload relacional de uma ficha: `fichas_treino` → `treino_dias` →
  * `treino_itens`. Partilhado entre o montador (cliente) e a Server Action
  * `createFicha`, que volta a validar no servidor.

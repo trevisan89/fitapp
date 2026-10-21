@@ -2,8 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ClipboardList, MessageCircle, Plus } from "lucide-react";
 
+import { FichaToggleAtiva } from "@/components/fichas/ficha-toggle-ativa";
+import { LinkAcessoAluno } from "@/components/fichas/link-acesso-aluno";
 import { createClient } from "@/lib/supabase/server";
-import { cn, getIniciais } from "@/lib/utils";
+import { getIniciais } from "@/lib/utils";
 import type { Tables } from "@/types/database.types";
 
 function FichaCard({ ficha }: { ficha: Tables<"fichas_treino"> }) {
@@ -25,14 +27,7 @@ function FichaCard({ ficha }: { ficha: Tables<"fichas_treino"> }) {
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between gap-2">
           <p className="truncate font-medium">{ficha.titulo}</p>
-          <span
-            className={cn(
-              "shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium",
-              ficha.ativa ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
-            )}
-          >
-            {ficha.ativa ? "Ativa" : "Inativa"}
-          </span>
+          <FichaToggleAtiva fichaId={ficha.id} ativa={ficha.ativa} />
         </div>
         <p className="mt-1 text-sm text-muted-foreground">Criada em {criadaEm}</p>
       </div>
@@ -153,6 +148,8 @@ export default async function FichasAlunoPage({
           Criar Nova Ficha
         </Link>
       </header>
+
+      <LinkAcessoAluno token={aluno.token_acesso} />
 
       {fichas.length === 0 ? (
         <EmptyState alunoId={aluno.id} />
