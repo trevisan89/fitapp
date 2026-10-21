@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Dumbbell, LayoutDashboard, Menu, Settings, Users, X } from "lucide-react";
 
 import { SidebarSkeleton } from "@/components/dashboard/skeletons";
+import { Logo } from "@/components/ui/logo";
 import { cn } from "@/lib/utils";
 
 type NavItem = {
@@ -35,10 +36,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="flex h-full flex-col">
       <div className="flex h-16 items-center gap-3 border-b border-border px-5">
-        <span className="grid size-9 place-items-center rounded-xl bg-gradient-primary text-sm font-bold text-primary-foreground shadow-lg shadow-primary/30">
-          F
-        </span>
-        <span className="font-semibold tracking-tight">FitApp</span>
+        <Logo dimensao="sm" />
       </div>
 
       <nav className="flex-1 space-y-1 p-3" aria-label="Navegação do painel">
@@ -155,12 +153,7 @@ export function DashboardShell({
             <Menu className="size-5" />
           </button>
 
-          <span className="flex items-center gap-2 font-semibold tracking-tight md:hidden">
-            <span className="grid size-7 place-items-center rounded-lg bg-gradient-primary text-xs font-bold text-primary-foreground">
-              F
-            </span>
-            FitApp
-          </span>
+          <Logo dimensao="sm" className="md:hidden" />
 
           <div className="ml-auto">{userMenu}</div>
         </header>

@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Política de Privacidade | FitApp",
+  title: "Política de Privacidade | AURA Training",
   description:
-    "Política de privacidade do FitApp: como recolhemos, usamos e protegemos os seus dados.",
+    "Política de privacidade da AURA Training: como recolhemos, usamos e protegemos os seus dados.",
 };
 
 export default function PrivacidadePage() {
@@ -15,7 +15,7 @@ export default function PrivacidadePage() {
 
       <h2>Recolha de Dados</h2>
       <p>
-        Para prestar o serviço, o FitApp recolhe apenas os dados necessários:
+        Para prestar o serviço, a AURA Training recolhe apenas os dados necessários:
         na criação da conta do Profissional, o seu nome, endereço de e-mail e
         palavra-passe (guardada de forma cifrada); na utilização da plataforma,
         os dados dos alunos inseridos pelo Profissional (por exemplo, nome e
@@ -27,7 +27,7 @@ export default function PrivacidadePage() {
 
       <h2>Uso das Informações</h2>
       <p>
-        Os dados são utilizados exclusivamente para o funcionamento do FitApp:
+        Os dados são utilizados exclusivamente para o funcionamento da AURA Training:
         autenticação, apresentação das fichas aos alunos, acompanhamento do
         progresso do treino e melhoria do próprio serviço. Não vendemos,
         alugamos nem cedemos dados pessoais a terceiros para fins de

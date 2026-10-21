@@ -13,7 +13,7 @@ import type { Database, Tables } from "@/types/database.types";
 type LinhaAdmin = { profile: Tables<"profiles">; email: string | null };
 
 /**
- * Área administrativa do FitApp — gestão MANUAL de planos dos clientes
+ * Área administrativa da AURA Training — gestão MANUAL de planos dos clientes
  * (no início, antes de os pagamentos Stripe entrarem em produção; depois,
  * o webhook volta a ser a fonte automática e esta tela serve de override).
  *

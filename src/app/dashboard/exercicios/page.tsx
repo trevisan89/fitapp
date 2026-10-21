@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import type { Tables } from "@/types/database.types";
 
 export const metadata = {
-  title: "Biblioteca de Exercícios | Painel FitApp",
+  title: "Biblioteca de Exercícios | AURA Training",
   description:
     "Catálogo de exercícios: os globais e os criados pelo Personal Trainer.",
 };
@@ -23,7 +23,7 @@ function ExercicioCard({ exercicio }: { exercicio: Tables<"exercicios_catalogo">
             "inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium",
             ehGlobal ? "bg-muted text-muted-foreground" : "bg-primary/10 text-primary"
           )}
-          title={ehGlobal ? "Exercício global do FitApp" : "Exercício deste profissional"}
+          title={ehGlobal ? "Exercício global da AURA Training" : "Exercício deste profissional"}
         >
           {ehGlobal ? <Globe className="size-3" /> : <UserRound className="size-3" />}
           {ehGlobal ? "Global" : "Meu"}

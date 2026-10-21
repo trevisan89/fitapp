@@ -5,7 +5,7 @@ import { DashboardSkeleton, UserMenuSkeleton } from "@/components/dashboard/skel
 import { UserMenu } from "@/components/dashboard/user-menu";
 
 export const metadata = {
-  title: "Painel | FitApp",
+  title: "Painel | AURA Training",
   description: "Gestão de alunos e fichas de treino do Personal Trainer.",
 };
 

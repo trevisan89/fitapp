@@ -4,10 +4,11 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle, CheckCircle2, Dumbbell, Loader2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 
 import { signIn, signUp } from "@/app/actions/auth";
+import { Logo } from "@/components/ui/logo";
 import { cn } from "@/lib/utils";
 import { loginSchema, type LoginInput } from "@/lib/validators/auth";
 
@@ -93,13 +94,7 @@ export function LoginForm() {
     <main className="flex min-h-dvh flex-col justify-center bg-muted/40 px-4 py-10">
       <div className="mx-auto w-full max-w-sm space-y-6">
         <div className="flex flex-col items-center gap-2 text-center">
-          <span
-            className="grid size-12 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-sm"
-            aria-hidden="true"
-          >
-            <Dumbbell className="size-6" />
-          </span>
-          <h1 className="text-xl font-semibold tracking-tight">FitApp</h1>
+          <Logo dimensao="lg" orientacao="empilhado" />
           <p className="text-sm text-muted-foreground">
             {modo === "entrar"
               ? "Entre no seu painel de Personal Trainer."
@@ -110,7 +105,7 @@ export function LoginForm() {
         <form
           onSubmit={handleSubmit(onSubmit)}
           noValidate
-          className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-sm"
+          className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-glow"
         >
           {feedback ? (
             <div
@@ -185,7 +180,7 @@ export function LoginForm() {
           <button
             type="submit"
             disabled={pendente}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition hover:opacity-90 disabled:opacity-60"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/30 transition hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
           >
             {pendente ? <Loader2 className="size-4 animate-spin" /> : null}
             {pendente

@@ -8,7 +8,7 @@ import { cn, getIniciais } from "@/lib/utils";
 import type { Tables } from "@/types/database.types";
 
 export const metadata = {
-  title: "Início | Painel FitApp",
+  title: "Início | AURA Training",
   description: "Visão geral da carteira de alunos do Personal Trainer.",
 };
 

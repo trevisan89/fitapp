@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { NovoAlunoForm } from "./novo-aluno-form";
 
 export const metadata = {
-  title: "Adicionar Aluno | Painel FitApp",
+  title: "Adicionar Aluno | AURA Training",
   description: "Registar um novo aluno no Painel do Personal Trainer.",
 };
 

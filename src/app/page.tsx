@@ -2,13 +2,14 @@ import Link from "next/link";
 import {
   ArrowRight,
   Check,
-  Dumbbell,
   GripVertical,
   Palette,
   Smartphone,
   Sparkles,
   Timer,
 } from "lucide-react";
+
+import { Logo } from "@/components/ui/logo";
 
 /** Linhas ilustrativas do mockup do WebApp do aluno (apenas visual). */
 const DEMO_EXERCICIOS = [
@@ -24,10 +25,7 @@ export default function Home() {
       <header className="sticky top-0 z-50 border-b border-border/70 bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
           <Link href="/" className="flex items-center gap-2">
-            <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Dumbbell className="size-4" aria-hidden="true" />
-            </span>
-            <span className="text-lg font-semibold tracking-tight">FitApp</span>
+            <Logo dimensao="md" />
           </Link>
 
           <nav className="hidden items-center gap-8 md:flex" aria-label="Navegação principal">
@@ -305,7 +303,7 @@ export default function Home() {
       <footer className="border-t border-border">
         <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-4 px-4 py-8 sm:flex-row sm:px-6">
           <p className="text-sm text-muted-foreground">
-            © 2026 FitApp. Todos os direitos reservados.
+            © 2026 AURA Training. Todos os direitos reservados.
           </p>
           <nav className="flex items-center gap-6 text-sm" aria-label="Rodapé">
             <Link

@@ -1,11 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="FitApp">
-  <!-- Ícone placeholder (PWA): alterne pelo logótipo/mark definitivo. -->
-  <rect width="512" height="512" rx="96" fill="#4f46e5"/>
-  <g fill="#ffffff">
-    <rect x="104" y="196" width="56" height="120" rx="16"/>
-    <rect x="176" y="168" width="48" height="176" rx="16"/>
-    <rect x="224" y="236" width="64" height="40" rx="12"/>
-    <rect x="288" y="168" width="48" height="176" rx="16"/>
-    <rect x="352" y="196" width="56" height="120" rx="16"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="AURA Training">
+  <defs>
+    <linearGradient id="aura-g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#050507"/>
+  <circle cx="256" cy="234" r="122" fill="none" stroke="url(#aura-g)" stroke-width="24" opacity="0.9"/>
+  <g fill="url(#aura-g)">
+    <rect x="92" y="212" width="40" height="84" rx="13"/>
+    <rect x="148" y="182" width="54" height="144" rx="17"/>
+    <rect x="210" y="220" width="92" height="28" rx="12"/>
+    <rect x="310" y="182" width="54" height="144" rx="17"/>
+    <rect x="380" y="212" width="40" height="84" rx="13"/>
   </g>
+  <text x="256" y="452" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="60" font-weight="800" letter-spacing="6" fill="url(#aura-g)">AURA</text>
 </svg>

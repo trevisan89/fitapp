@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { NovoExercicioForm } from "./novo-exercicio-form";
 
 export const metadata = {
-  title: "Adicionar Exercício | Painel FitApp",
+  title: "Adicionar Exercício | AURA Training",
   description: "Registar um novo exercício na biblioteca do Personal Trainer.",
 };
 

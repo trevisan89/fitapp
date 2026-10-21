@@ -9,7 +9,7 @@ import { ExecucaoTreino } from "@/components/aluno/execucao-treino";
 import { getIniciais } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Meu Treino | FitApp",
+  title: "Meu Treino | AURA Training",
   description: "Execução do treino prescrito pelo seu Personal Trainer.",
 };
 

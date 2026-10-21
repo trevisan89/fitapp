@@ -28,7 +28,7 @@ export function getStripe(): Stripe {
   if (!stripeClient) {
     stripeClient = new Stripe(apiKey, {
       apiVersion: "2026-09-30.endive",
-      appInfo: { name: "FitApp", version: "0.1.0" },
+      appInfo: { name: "AURA Training", version: "0.1.0" },
     });
   }
 

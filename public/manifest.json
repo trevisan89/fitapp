@@ -1,15 +1,21 @@
 {
-  "name": "FitApp — Treinos",
-  "short_name": "FitApp",
+  "name": "AURA Training — Treinos",
+  "short_name": "AURA",
   "description": "Execução dos treinos prescritos pelo seu Personal Trainer.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#ffffff",
-  "theme_color": "#4f46e5",
+  "background_color": "#050507",
+  "theme_color": "#8b5cf6",
   "lang": "pt",
   "icons": [
+    {
+      "src": "/aura-logo.jpg",
+      "sizes": "2048x2048",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
     {
       "src": "/icons/icon.svg",
       "sizes": "any",

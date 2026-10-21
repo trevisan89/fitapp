@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { LoginForm } from "./login-form";
 
 export const metadata: Metadata = {
-  title: "Entrar | FitApp",
+  title: "Entrar | AURA Training",
   description: "Acesse o painel do Personal Trainer.",
 };
 

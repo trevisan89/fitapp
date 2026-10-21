@@ -1,4 +1,4 @@
-# FitApp
+# AURA Training
 
 SaaS white-label de fichas de treino para Personal Trainers. O profissional monta
 as fichas com drag-and-drop e o aluno treina pelo navegador (PWA) — sem precisar

@@ -5,7 +5,7 @@ import { DashboardSkeleton, UserMenuSkeleton } from "@/components/dashboard/skel
 import { UserMenu } from "@/components/dashboard/user-menu";
 
 export const metadata = {
-  title: "Admin | FitApp",
+  title: "Admin | AURA Training",
   description: "Área administrativa: gestão manual de planos dos clientes.",
 };
 

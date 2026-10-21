@@ -13,16 +13,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FitApp | Treinos e Fichas",
+  title: "AURA Training | Treinos e Fichas de Personal",
   description:
-    "SaaS de fichas e treinos para Personal Trainers — painel profissional e WebApp do aluno.",
+    "SaaS white-label de fichas e treinos para Personal Trainers — painel profissional e WebApp do aluno.",
   manifest: "/manifest.json",
   // Metatags de PWA:
   //   * appleWebApp.capable → <meta name="apple-mobile-web-app-capable" content="yes">
-  //   * viewport.themeColor → <meta name="theme-color" content="#4f46e5">
+  //   * viewport.themeColor → <meta name="theme-color" content="#8b5cf6">
   appleWebApp: {
     capable: true,
-    title: "FitApp",
+    title: "AURA Training",
     statusBarStyle: "default",
   },
   icons: {
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#4f46e5",
+  themeColor: "#8b5cf6",
   viewportFit: "cover",
 };
 

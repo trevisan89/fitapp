@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Tables } from "@/types/database.types";
 
 export const metadata = {
-  title: "Definições | Painel FitApp",
+  title: "Definições | AURA Training",
   description: "Configuração white-label do PWA do Personal Trainer.",
 };
 

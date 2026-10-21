@@ -1,5 +1,5 @@
 /**
- * Lista de e-mails com acesso à área administrativa do FitApp.
+ * Lista de e-mails com acesso à área administrativa da AURA Training.
  *
  * A checagem é feita TRÊS vezes por defesa em profundidade:
  *   1. no `proxy.ts` (borda) — redireciona antes de qualquer streaming;

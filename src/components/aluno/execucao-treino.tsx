@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AlertTriangle, Check, Dumbbell } from "lucide-react";
+import { AlertTriangle, Check, Dumbbell, Weight } from "lucide-react";
 
 import { registrarLog } from "@/app/actions/execucao";
 import { RestTimer } from "@/components/aluno/rest-timer";
@@ -9,6 +9,61 @@ import { cn } from "@/lib/utils";
 import type { DiaTreinoAluno, ItemTreinoAluno } from "@/types/treino-aluno";
 
 type DescansoAtivo = { chave: string; segundos: number };
+
+/**
+ * Extrai o primeiro número de um texto livre de carga/repetições
+ * ("20 kg" → 20, "8-12" → 8, "AMRAP" → null).
+ */
+function extrairNumero(texto: string | null | undefined): number | null {
+  if (!texto) return null;
+  const correspondencia = texto.replace(",", ".").match(/\d+(?:\.\d+)?/);
+  if (!correspondencia) return null;
+  const valor = Number(correspondencia[0]);
+  return Number.isFinite(valor) ? valor : null;
+}
+
+/**
+ * Repetições como número — numa faixa ("8-12", "8 x 12") usa o limite
+ * superior (melhor cenário de execução); texto não numérico → null.
+ */
+function repeticoesEmNumero(texto: string | null): number | null {
+  if (!texto) return null;
+  const faixa = texto.match(
+    /(\d+(?:[.,]\d+)?)\s*[-–x×]\s*(\d+(?:[.,]\d+)?)/i
+  );
+  if (faixa) {
+    return Math.max(
+      Number(faixa[1].replace(",", ".")),
+      Number(faixa[2].replace(",", "."))
+    );
+  }
+  return extrairNumero(texto);
+}
+
+/**
+ * Tonelagem de UMA série (repetições × carga), ou null quando o item
+ * não é quantificável (sem carga numérica ou "AMRAP").
+ */
+function tonelagemPorSerie(item: ItemTreinoAluno): number | null {
+  const carga = extrairNumero(item.cargaSugerida);
+  const repeticoes = repeticoesEmNumero(item.repeticoes);
+  if (carga == null || repeticoes == null) return null;
+  return repeticoes * carga;
+}
+
+/** Tonelagem total prevista de um dia: Σ (séries × repetições × carga). */
+function calcularTonelagemDia(itens: ItemTreinoAluno[]): number {
+  return itens.reduce((soma, item) => {
+    const porSerie = tonelagemPorSerie(item);
+    return porSerie == null ? soma : soma + item.series * porSerie;
+  }, 0);
+}
+
+function formatarKg(valor: number): string {
+  return new Intl.NumberFormat("pt-PT", {
+    maximumFractionDigits: 0,
+  }).format(Math.round(valor));
+}
 
 /**
  * Navegação de dias + lista de exercícios do WebApp do aluno
@@ -105,6 +160,15 @@ export function ExecucaoTreino({
   const percentual = seriesTotais > 0 ? (seriesFeitasDia / seriesTotais) * 100 : 0;
   const diaConcluido = seriesTotais > 0 && seriesFeitasDia >= seriesTotais;
 
+  // Tonelagem estimada do dia (séries × reps × carga) e quanto já foi
+  // "conquistado" — feedback imediato de esforço estilo Hevy/Strong.
+  const tonelagemTotal = calcularTonelagemDia(dia.itens);
+  const tonelagemFeita = dia.itens.reduce((soma, item) => {
+    const porSerie = tonelagemPorSerie(item);
+    if (porSerie == null) return soma;
+    return soma + seriesDoItem(item).filter(Boolean).length * porSerie;
+  }, 0);
+
   return (
     <>
       {/* Tabs horizontais dos dias — segmented control */}
@@ -147,6 +211,43 @@ export function ExecucaoTreino({
           })}
         </ul>
       </nav>
+
+      {/* Tonelagem estimada do dia — esforço total em kg */}
+      {dia.itens.length > 0 ? (
+        <section
+          aria-label="Tonelagem do dia"
+          className="relative mt-4 overflow-hidden rounded-2xl bg-gradient-primary p-4 text-primary-foreground shadow-lg shadow-primary/30 motion-safe:animate-fade-in-up"
+        >
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-8 -top-10 size-32 rounded-full bg-primary-foreground/15 blur-2xl"
+          />
+          <div className="relative flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wider text-primary-foreground/80">
+                Tonelagem do dia
+              </p>
+              <p className="mt-0.5 text-3xl font-extrabold tabular-nums tracking-tight">
+                {tonelagemTotal > 0 ? formatarKg(tonelagemTotal) : "—"}
+                <span className="ml-1 text-base font-semibold text-primary-foreground/80">
+                  kg
+                </span>
+              </p>
+              <p className="mt-1 text-[11px] leading-snug text-primary-foreground/75">
+                {tonelagemFeita > 0
+                  ? `${formatarKg(tonelagemFeita)} kg já conquistados · estimado com séries × repetições × carga`
+                  : "Estimada com séries × repetições × carga sugerida"}
+              </p>
+            </div>
+            <span
+              className="grid size-12 shrink-0 place-items-center rounded-2xl bg-primary-foreground/15 ring-1 ring-inset ring-primary-foreground/25"
+              aria-hidden="true"
+            >
+              <Weight className="size-6" />
+            </span>
+          </div>
+        </section>
+      ) : null}
 
       {/* Resumo de progresso do dia */}
       {dia.itens.length > 0 ? (
@@ -348,15 +449,15 @@ function CartaoExercicio({
               aria-label={`Série ${indiceSerie + 1} de ${item.nome}`}
               onClick={() => onAlternar(item, indiceSerie)}
               className={cn(
-                "flex min-h-14 w-full items-center gap-2.5 rounded-2xl border px-3 py-2.5 text-sm font-semibold transition-all duration-200 active:scale-[0.96]",
+                "flex min-h-14 w-full items-center gap-2.5 rounded-2xl border px-3 py-2.5 text-sm font-semibold shadow-sm transition-all duration-200 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-card active:translate-y-0 active:scale-[0.94]",
                 marcada
-                  ? "border-transparent bg-gradient-primary text-primary-foreground shadow-md shadow-primary/30"
-                  : "border-border bg-background hover:border-primary/50 hover:bg-primary/5"
+                  ? "border-transparent bg-gradient-primary text-primary-foreground shadow-lg shadow-primary/40"
+                  : "border-border bg-background hover:border-primary/50 hover:bg-primary/5 hover:shadow-md hover:shadow-primary/10"
               )}
             >
               <span
                 className={cn(
-                  "grid size-6 shrink-0 place-items-center rounded-xl border",
+                  "grid size-6 shrink-0 place-items-center rounded-xl border transition-colors duration-200",
                   marcada
                     ? "border-primary-foreground/40 bg-primary-foreground/25 motion-safe:animate-check-pop"
                     : "border-input bg-card"

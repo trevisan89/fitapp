@@ -11,7 +11,7 @@
  * Tokens de tema (padrão shadcn/ui em Tailwind v4) usados pela interface:
  *   bg-background, bg-card, bg-muted, text-muted-foreground, bg-primary,
  *   text-primary, border-border, ring-ring, bg-destructive...
- * `--primary-end` completa o gradiente da marca (indigo → violeta).
+ * `--primary-end` completa o gradiente da marca (violeta → azul elétrico).
  */
 :root {
   --background: #ffffff;
@@ -20,8 +20,8 @@
   --card-foreground: #18181b;
   --popover: #ffffff;
   --popover-foreground: #18181b;
-  --primary: #4f46e5;
-  --primary-end: #7c3aed;
+  --primary: #7c3aed;
+  --primary-end: #3b82f6;
   --primary-foreground: #ffffff;
   --secondary: #f4f4f5;
   --secondary-foreground: #18181b;
@@ -33,7 +33,7 @@
   --destructive-foreground: #ffffff;
   --border: #e4e4e7;
   --input: #e4e4e7;
-  --ring: #4f46e5;
+  --ring: #7c3aed;
 }
 
 @theme inline {
@@ -63,15 +63,20 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Fundo "quase preto" profundo (zinc-950) com cartões elevados. */
-    --background: #09090b;
+    /*
+     * AURA Dark Luxury: fundo profundo #050507 com cartões em vidro
+     * translúcido (zinc-900/60 + border branca/10) e glow da marca.
+     */
+    --background: #050507;
     --foreground: #f4f4f5;
-    --card: #111114;
+    /* Vidro translúcido — o blur é aplicado pela regra `.bg-card` abaixo. */
+    --card: #18181b99;
     --card-foreground: #f4f4f5;
-    --popover: #111114;
+    /* Popover sólido: conteúdo denso (menus) pede legibilidade total. */
+    --popover: #18181b;
     --popover-foreground: #f4f4f5;
-    --primary: #6366f1;
-    --primary-end: #8b5cf6;
+    --primary: #8b5cf6;
+    --primary-end: #3b82f6;
     --primary-foreground: #ffffff;
     --secondary: #18181b;
     --secondary-foreground: #f4f4f5;
@@ -81,9 +86,9 @@
     --accent-foreground: #f4f4f5;
     --destructive: #ef4444;
     --destructive-foreground: #ffffff;
-    --border: #23232b;
-    --input: #23232b;
-    --ring: #6366f1;
+    --border: #ffffff1a;
+    --input: #ffffff26;
+    --ring: #8b5cf6;
   }
 }
 
@@ -91,6 +96,28 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans, ui-sans-serif), ui-sans-serif, system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  /*
+   * Aura ambiente: brilhos radiais sutis (violeta → azul) atrás do
+   * conteúdo, evocando o fundo do logótipo oficial.
+   */
+  body {
+    background-image:
+      radial-gradient(900px 480px at 50% -8%, color-mix(in srgb, var(--primary) 13%, transparent), transparent 62%),
+      radial-gradient(760px 420px at 96% 6%, color-mix(in srgb, var(--primary-end) 9%, transparent), transparent 60%);
+    background-attachment: fixed;
+  }
+
+  /*
+   * Cartões em vidro: o token `--card` já é translúcido (zinc-900/60) —
+   * blur + saturação completam o efeito "glassmorphism" sem tocar em
+   * cada componente.
+   */
+  .bg-card {
+    backdrop-filter: blur(16px) saturate(140%);
+  }
 }
 
 /* Seleção de texto com a cor da marca. */
@@ -176,8 +203,8 @@ body {
 }
 
 /*
- * Gradiente da marca (indigo → violeta) e variação em texto — usados em
- * botões primários, selos de progresso e títulos de destaque.
+ * Gradiente da marca (violeta → azul elétrico) e variação em texto —
+ * usados em botões primários, selos de progresso e títulos de destaque.
  */
 @utility bg-gradient-primary {
   background-image: linear-gradient(
@@ -196,4 +223,14 @@ body {
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
+}
+
+/*
+ * Glow neon da marca (violeta → azul) para os elementos de destaque:
+ * logótipo, card de tonelagem e botões primários premium.
+ */
+@utility shadow-glow {
+  box-shadow:
+    0 0 24px -4px color-mix(in srgb, var(--primary) 45%, transparent),
+    0 0 60px -16px color-mix(in srgb, var(--primary-end) 38%, transparent);
 }
